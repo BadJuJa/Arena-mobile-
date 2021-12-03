@@ -8,44 +8,67 @@ public class PlayerManager : MonoBehaviourSingleton<PlayerManager> {
     private float _health;
     private float _damage;
     private float _criticalHitMult;
-    private float _attackSpeed;
+    private bool _canAttack;
+    [SerializeField] private int _coins;
 
-    public float Health {
+    public int GetCoins {
+        get {
+            return _coins;
+        }
+    }
+
+    public float GetHealth {
         get {
             return _health;
         }
     }
 
-    public float Damage {
+    public float GetDamage {
         get {
             return _damage;
         }
     }
 
-    public float AttackSpeed {
-        get {
-            return _attackSpeed;
-        }
-    }
-
-    public float CriticalHitMult {
+    public float GetCriticalHitMult {
         get {
             return _criticalHitMult;
         }
     }
 
+    public bool CanAttack {
+        get {
+            return _canAttack;
+        }
+    }
+
     private void Start() {
-        LoadData();
+        LoadData(PlayerData);
+        _canAttack = true;
+    }
+
+    public void Attacked() {
+        _canAttack = false;
+        StartCoroutine(ResetAttack());
+    }
+
+    private IEnumerator ResetAttack() {
+        yield return new WaitForSeconds(0.7f);
+        _canAttack = true;
     }
 
     public void TakeDamage(float damage) {
         _health -= damage;
     }
 
-    private void LoadData() {
-        _health = PlayerData.Health;
-        _damage = PlayerData.Damage;
-        _criticalHitMult = PlayerData.CriticalHitMult;
-        _attackSpeed = PlayerData.AttackSpeed;
+    public void AddCoins(int value) {
+        PlayerData.AddCoins(value);
+        _coins += value;
+    }
+
+    private void LoadData(PlayerData data) {
+        _health = data.Health;
+        _damage = data.Damage;
+        _criticalHitMult = data.CriticalHitMult;
+        _coins = data.Coins;
     }
 }

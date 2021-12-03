@@ -15,10 +15,6 @@ public class InputManager : MonoBehaviourSingleton<InputManager> {
 
     public event StartTouch OnEndTouch;
 
-    public delegate void Tapped();
-
-    public event Tapped OnTap;
-
     #endregion Events
 
     private PlayerControls _playerControls;
@@ -43,17 +39,14 @@ public class InputManager : MonoBehaviourSingleton<InputManager> {
     }
 
     private void StartTouchPrimary(InputAction.CallbackContext ctx) {
-        if (OnStartTouch != null)
-            OnStartTouch(Utils.ScreenToWorld(_mainCamera, _playerControls.Touch.PrimaryPosition.ReadValue<Vector2>()), (float)ctx.startTime);
+        if (UIHandler.GameIsPaused)
+            return;
+        OnStartTouch?.Invoke(Utils.ScreenToWorld(_mainCamera, _playerControls.Touch.PrimaryPosition.ReadValue<Vector2>()), (float)ctx.startTime);
     }
 
     private void EndTouchPrimary(InputAction.CallbackContext ctx) {
-        if (OnEndTouch != null)
-            OnEndTouch(Utils.ScreenToWorld(_mainCamera, _playerControls.Touch.PrimaryPosition.ReadValue<Vector2>()), (float)ctx.time);
-    }
-
-    private void SendTap(InputAction.CallbackContext ctx) {
-        if (OnTap != null)
-            OnTap();
+        if (UIHandler.GameIsPaused)
+            return;
+        OnEndTouch?.Invoke(Utils.ScreenToWorld(_mainCamera, _playerControls.Touch.PrimaryPosition.ReadValue<Vector2>()), (float)ctx.time);
     }
 }

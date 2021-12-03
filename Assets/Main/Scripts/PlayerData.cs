@@ -7,5 +7,10 @@ public class PlayerData : ScriptableObject {
     public float Health;
     public float Damage;
     public float CriticalHitMult;
-    public float AttackSpeed;
+
+    public int Coins;
+
+    public void AddCoins(int value) {
+        Coins += value;
+    }
 }

@@ -9,10 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91f81527c7dd38a4f9f95d854d3941c9, type: 3}
-  m_Name: PlayerData
+  m_Script: {fileID: 11500000, guid: 0b58a5fa9121b6d41a09c24a15b50f0c, type: 3}
+  m_Name: Enemy1
   m_EditorClassIdentifier: 
-  Health: 100
-  Damage: 10
-  CriticalHitMult: 3
-  Coins: 0
+  Name: "\u0428\u0430\u0443\u0440\u043C\u0430"
+  Prefab: {fileID: 1136392502381685722, guid: d62cf595c13c61247af6144de54d149a, type: 3}
+  CostOfCoins: 10
+  Health: 45
+  Damage: 5
+  AttackSpeed: 100
