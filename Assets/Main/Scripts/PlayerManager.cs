@@ -41,6 +41,22 @@ public class PlayerManager : MonoBehaviourSingleton<PlayerManager> {
         }
     }
 
+    private void OnEnable() {
+        _health = PlayerPrefs.GetFloat("Health");
+        _damage = PlayerPrefs.GetFloat("Damage");
+        _criticalHitMult = PlayerPrefs.GetFloat("CriticalMult");
+        _coins = PlayerPrefs.GetInt("Coins");
+        PlayerData.Load(_health, _damage, _criticalHitMult, _coins);
+    }
+
+    private void OnDisable() {
+        PlayerPrefs.SetFloat("Health", _health);
+        PlayerPrefs.SetFloat("Damage", _damage);
+        PlayerPrefs.SetFloat("CriticalMult", _criticalHitMult);
+        PlayerPrefs.SetInt("Coins", _coins);
+        PlayerPrefs.Save();
+    }
+
     private void Start() {
         LoadData(PlayerData);
         _canAttack = true;

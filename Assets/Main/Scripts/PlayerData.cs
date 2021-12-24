@@ -13,4 +13,11 @@ public class PlayerData : ScriptableObject {
     public void AddCoins(int value) {
         Coins += value;
     }
+
+    public void Load(float health, float damage, float crit, int coins) {
+        Health = health;
+        Damage = damage;
+        CriticalHitMult = crit;
+        Coins = coins;
+    }
 }

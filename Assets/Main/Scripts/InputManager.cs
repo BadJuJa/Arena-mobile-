@@ -39,13 +39,13 @@ public class InputManager : MonoBehaviourSingleton<InputManager> {
     }
 
     private void StartTouchPrimary(InputAction.CallbackContext ctx) {
-        if (UIHandler.GameIsPaused)
+        if (PauseMenuScripts.GameIsPaused)
             return;
         OnStartTouch?.Invoke(Utils.ScreenToWorld(_mainCamera, _playerControls.Touch.PrimaryPosition.ReadValue<Vector2>()), (float)ctx.startTime);
     }
 
     private void EndTouchPrimary(InputAction.CallbackContext ctx) {
-        if (UIHandler.GameIsPaused)
+        if (PauseMenuScripts.GameIsPaused)
             return;
         OnEndTouch?.Invoke(Utils.ScreenToWorld(_mainCamera, _playerControls.Touch.PrimaryPosition.ReadValue<Vector2>()), (float)ctx.time);
     }
