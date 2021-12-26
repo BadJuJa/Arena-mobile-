@@ -1,23 +1,33 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-[CreateAssetMenu(fileName = "PlayerData", menuName = "Scriptable Objects/Player Data")]
-public class PlayerData : ScriptableObject {
-    public float Health;
-    public float Damage;
+[System.Serializable]
+public class PlayerData {
     public float CriticalHitMult;
-
+    public int MaxHealth;
+    public int Health;
+    public int Damage;
     public int Coins;
+    public int HealthUpgrades;
+    public int DamageUpgrades;
+    public int CritMultUpgrades;
 
-    public void AddCoins(int value) {
-        Coins += value;
+    public PlayerData() {
+        MaxHealth = DefaultSetups.MaxHealth;
+        Damage = DefaultSetups.Damage;
+        CriticalHitMult = DefaultSetups.CriticalHitMult;
+        Health = MaxHealth;
+        Coins = 0;
+        HealthUpgrades = 0;
+        DamageUpgrades = 0;
+        CritMultUpgrades = 0;
     }
 
-    public void Load(float health, float damage, float crit, int coins) {
-        Health = health;
-        Damage = damage;
-        CriticalHitMult = crit;
-        Coins = coins;
+    public PlayerData(PlayerManager player) {
+        MaxHealth = player.MaxHealth;
+        Health = player.Health;
+        Damage = player.Damage;
+        CriticalHitMult = player.CriticalHitMult;
+        Coins = player.Coins;
+        HealthUpgrades = player.HealthUpgrades;
+        DamageUpgrades = player.DamageUpgrades;
+        CritMultUpgrades = player.CritMultUpgrades;
     }
 }

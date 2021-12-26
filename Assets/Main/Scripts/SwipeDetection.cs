@@ -1,7 +1,4 @@
-using System;
-using System.Collections;
 using UnityEngine;
-using TMPro;
 
 [DefaultExecutionOrder(-1)]
 public class SwipeDetection : MonoBehaviourSingleton<SwipeDetection> {

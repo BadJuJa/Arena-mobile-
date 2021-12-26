@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b58a5fa9121b6d41a09c24a15b50f0c, type: 3}
   m_Name: Enemy2
   m_EditorClassIdentifier: 
-  Name: "\u0428\u043F\u0438\u0433\u0443\u043D"
+  Name: "\u0428\u043F\u0438\u0433\u0443\u043D (\u0423\u0432\u043E\u043B\u0435\u043D)"
   Prefab: {fileID: 1136392502381685722, guid: 75506809a899d7845af7395d1001ba9e, type: 3}
   CostOfCoins: 50
   Health: 100
   Damage: 15
-  AttackSpeed: 50
+  AttackSpeed: 75

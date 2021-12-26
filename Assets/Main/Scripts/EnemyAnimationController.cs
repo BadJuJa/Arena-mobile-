@@ -1,22 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyAnimationController : MonoBehaviour {
     private Animator _animator;
-    private EnemyController _enemyControllerInstance;
+    private EnemyController _enemyController;
 
     private void Awake() {
         _animator = GetComponent<Animator>();
-        _enemyControllerInstance = EnemyController.Instance;
+        _enemyController = EnemyController.Instance;
     }
 
     private void Start() {
-        _enemyControllerInstance.OnAnimationTriggered += SetTrigger;
+        _enemyController.OnAnimationTriggered += SetTrigger;
     }
 
     private void OnDestroy() {
-        _enemyControllerInstance.OnAnimationTriggered -= SetTrigger;
+        _enemyController.OnAnimationTriggered -= SetTrigger;
     }
 
     private void SetTrigger(string triggerName) {
@@ -24,10 +22,18 @@ public class EnemyAnimationController : MonoBehaviour {
     }
 
     public void SetStun(int _) {
-        _enemyControllerInstance.SetStun(_ == 1);
+        _enemyController.SetStun(_ == 1);
     }
 
     public void SetPossibilityToBeParried(int _) {
-        _enemyControllerInstance.SetPossibilityToBeParried(_ == 1);
+        _enemyController.SetPossibilityToBeParried(_ == 1);
+    }
+
+    public void DealDamage() {
+        _enemyController.DealDamage();
+    }
+
+    public void AnimationEnd() {
+        _enemyController.ResetAttack();
     }
 }

@@ -46,10 +46,14 @@ public class EnemyController : MonoBehaviourSingleton<EnemyController> {
     private AttackDirection _attackDirection;
 
     private float _maxHealth;
-    private float _health;
-    private float _damage;
     private float _attackSpeed;
+    private float _timeBetweenAttacks;
+    private int _health;
+    private int _damage;
     private int _costOfCoins;
+
+    private bool _isSpawned;
+    private float _timer;
 
     #endregion Setups
 
@@ -58,28 +62,37 @@ public class EnemyController : MonoBehaviourSingleton<EnemyController> {
     private void Awake() {
         _swipeDetection = SwipeDetection.Instance;
         _playerManager = PlayerManager.Instance;
+        _swipeDetection.OnSwipeDone += HandlePlayerActions;
     }
 
     private void Start() {
+        _isSpawned = false;
+        _canAttack = false;
         if (EnemyDataList != null) {
             StartCoroutine(LoadEnemy(ChooseEnemy()));
         }
-        _swipeDetection.OnSwipeDone += HandlePlayerActions;
-        _canAttack = false;
-        Invoke("ResetAttack", 3);
     }
 
     private void Update() {
-        if (_canAttack) {
-            Attack();
+        if (!_canAttack || !_isSpawned)
+            return;
+        if (_timer <= 0f)
+            _timer = _timeBetweenAttacks;
+
+        if (_timer > 0f) {
+            _timer -= Time.deltaTime;
+            if (_timer <= 0) {
+                Attack();
+            }
         }
     }
 
     #endregion Unity Methods
 
     private void HandlePlayerActions(SwipeDetection.SwipeDirection swipeDirection) {
-        if (!_playerManager.CanAttack)
+        if (!_playerManager.CanAttack || !_isSpawned)
             return;
+
         if (_canBeParried && swipeDirection.ToString() == _attackDirection.ToString()) {
             _stunned = true;
             OnAnimationTriggered?.Invoke("GetStunned");
@@ -92,11 +105,11 @@ public class EnemyController : MonoBehaviourSingleton<EnemyController> {
 
     public void TakeDamage() {
         if (!_stunned) {
-            _health -= _playerManager.GetDamage;
+            _health -= _playerManager.Damage;
         } else {
-            _health -= _playerManager.GetDamage * _playerManager.GetCriticalHitMult;
+            _health -= (int)Mathf.Ceil(_playerManager.Damage * _playerManager.CriticalHitMult);
         }
-        _health = Mathf.Clamp(_health, 0, _maxHealth);
+        _health = (int)Mathf.Clamp(_health, 0, _maxHealth);
         OnEnemyDamaged?.Invoke(_health);
 
         if (_health <= 0) {
@@ -106,24 +119,23 @@ public class EnemyController : MonoBehaviourSingleton<EnemyController> {
 
     private void Attack() {
         _canAttack = false;
+
         _attackDirection = (AttackDirection)Random.Range(0, 3);
         OnAnimationTriggered?.Invoke("Attack" + _attackDirection.ToString());
-
-        Invoke("ResetAttack", 100 / _attackSpeed);
     }
 
     public void DealDamage() {
         _playerManager.TakeDamage(_damage);
     }
 
-    private void ResetAttack() {
+    public void ResetAttack() {
         _canAttack = true;
     }
 
     public void Die() {
+        _isSpawned = false;
         _playerManager.AddCoins(_costOfCoins);
         OnEnemyDeath?.Invoke();
-        LoadEnemy(EnemyDataList[Random.Range(0, EnemyDataList.Count)]);
         StartCoroutine(LoadEnemy(ChooseEnemy()));
     }
 
@@ -142,7 +154,7 @@ public class EnemyController : MonoBehaviourSingleton<EnemyController> {
         _damage = data.Damage;
         _attackSpeed = data.AttackSpeed;
         _costOfCoins = data.CostOfCoins;
-
+        _timeBetweenAttacks = 100 / _attackSpeed;
         yield return new WaitForSeconds(RespawnTime);
 
         OnEnemyChanged?.Invoke(data.Name, data.Health);
@@ -151,6 +163,8 @@ public class EnemyController : MonoBehaviourSingleton<EnemyController> {
         visuals.transform.SetParent(transform);
         visuals.transform.localPosition = Vector3.zero;
         visuals.transform.rotation = Quaternion.identity;
+        _isSpawned = true;
+        ResetAttack();
     }
 
     private EnemyData ChooseEnemy() {

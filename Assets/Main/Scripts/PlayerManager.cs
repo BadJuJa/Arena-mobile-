@@ -1,64 +1,61 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviourSingleton<PlayerManager> {
-    public PlayerData PlayerData;
 
-    private float _health;
-    private float _damage;
+    #region Setups
+
     private float _criticalHitMult;
     private bool _canAttack;
-    [SerializeField] private int _coins;
+    private int _maxHealth;
+    private int _health;
+    private int _damage;
+    private int _coins;
+    private int _healthUpgrades;
+    private int _damageUpgrades;
+    private int _critMultUpgrades;
 
-    public int GetCoins {
-        get {
-            return _coins;
-        }
-    }
+    #endregion Setups
 
-    public float GetHealth {
-        get {
-            return _health;
-        }
-    }
+    #region Properties
 
-    public float GetDamage {
-        get {
-            return _damage;
-        }
-    }
+    public int Coins { get => _coins; }
+    public int HealthUpgrades { get => _healthUpgrades; }
+    public int DamageUpgrades { get => _damageUpgrades; }
+    public int CritMultUpgrades { get => _critMultUpgrades; }
+    public int MaxHealth { get => _maxHealth; }
+    public int Health { get => _health; }
+    public float HealthPercent { get => (float)_health / (float)_maxHealth; }
+    public int Damage { get => _damage; }
+    public float CriticalHitMult { get => _criticalHitMult; }
+    public bool CanAttack { get => _canAttack; }
 
-    public float GetCriticalHitMult {
-        get {
-            return _criticalHitMult;
-        }
-    }
+    #endregion Properties
 
-    public bool CanAttack {
-        get {
-            return _canAttack;
-        }
-    }
+    #region Events
 
-    private void OnEnable() {
-        _health = PlayerPrefs.GetFloat("Health");
-        _damage = PlayerPrefs.GetFloat("Damage");
-        _criticalHitMult = PlayerPrefs.GetFloat("CriticalMult");
-        _coins = PlayerPrefs.GetInt("Coins");
-        PlayerData.Load(_health, _damage, _criticalHitMult, _coins);
-    }
+    public delegate void CoinsChange();
+
+    public event CoinsChange OnCoinsChange;
+
+    public delegate void HealthChanged();
+
+    public event HealthChanged OnHealthChanged;
+
+    public delegate void Death();
+
+    public event Death OnPlayersDeath;
+
+    #endregion Events
 
     private void OnDisable() {
-        PlayerPrefs.SetFloat("Health", _health);
-        PlayerPrefs.SetFloat("Damage", _damage);
-        PlayerPrefs.SetFloat("CriticalMult", _criticalHitMult);
-        PlayerPrefs.SetInt("Coins", _coins);
-        PlayerPrefs.Save();
+        if (_health <= 0)
+            return;
+        SaveSystem.Save(this);
     }
 
     private void Start() {
-        LoadData(PlayerData);
+        LoadData();
         _canAttack = true;
     }
 
@@ -72,19 +69,67 @@ public class PlayerManager : MonoBehaviourSingleton<PlayerManager> {
         _canAttack = true;
     }
 
-    public void TakeDamage(float damage) {
-        _health -= damage;
+    public void TakeDamage(int damage) {
+        if (damage < _health) {
+            _health -= damage;
+        } else {
+            _health = 0;
+        }
+        OnHealthChanged?.Invoke();
+        if (_health == 0) {
+            Die();
+        }
+    }
+
+    public void Die() {
+        OnPlayersDeath?.Invoke();
     }
 
     public void AddCoins(int value) {
-        PlayerData.AddCoins(value);
         _coins += value;
+        OnCoinsChange?.Invoke();
     }
 
-    private void LoadData(PlayerData data) {
+    public void ReduceCoins(int value) {
+        _coins -= value;
+        OnCoinsChange?.Invoke();
+    }
+
+    public void IncreaseHealth(int value, int price) {
+        if (_coins < price)
+            return;
+        _maxHealth += value;
+        _health += value;
+        _healthUpgrades++;
+        ReduceCoins(price);
+        OnHealthChanged?.Invoke();
+    }
+
+    public void IncreaseDamage(int value, int price) {
+        if (_coins < price)
+            return;
+        _damage += value;
+        _damageUpgrades++;
+        ReduceCoins(price);
+    }
+
+    public void IncreaseCritMult(float value, int price) {
+        if (_coins < price)
+            return;
+        _criticalHitMult += value;
+        _critMultUpgrades++;
+        ReduceCoins(price);
+    }
+
+    public void LoadData() {
+        PlayerData data = SaveSystem.Load();
+        _maxHealth = data.MaxHealth;
         _health = data.Health;
         _damage = data.Damage;
         _criticalHitMult = data.CriticalHitMult;
         _coins = data.Coins;
+        _healthUpgrades = data.HealthUpgrades;
+        _damageUpgrades = data.DamageUpgrades;
+        _critMultUpgrades = data.CritMultUpgrades;
     }
 }
