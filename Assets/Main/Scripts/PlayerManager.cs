@@ -5,6 +5,12 @@ public class PlayerManager : MonoBehaviourSingleton<PlayerManager> {
 
     #region Setups
 
+    public float TimeBetweenRegen;
+    public int HealCost;
+    public int HealValue;
+
+    [SerializeField] private float _BlockingMultipliar = 0.5f;
+
     private float _criticalHitMult;
     private bool _canAttack;
     private int _maxHealth;
@@ -14,6 +20,10 @@ public class PlayerManager : MonoBehaviourSingleton<PlayerManager> {
     private int _healthUpgrades;
     private int _damageUpgrades;
     private int _critMultUpgrades;
+
+    internal bool isBlocking;
+
+    private float _timer;
 
     #endregion Setups
 
@@ -59,6 +69,21 @@ public class PlayerManager : MonoBehaviourSingleton<PlayerManager> {
         _canAttack = true;
     }
 
+    private void Update() {
+        if (HealthPercent < 0.5f && Coins >= HealCost) {
+            if (_timer <= 0) {
+                _timer = TimeBetweenRegen;
+            }
+            if (_timer > 0) {
+                _timer -= Time.deltaTime;
+                if (_timer <= 0) {
+                    Heal(HealValue);
+                    ReduceCoins(HealCost);
+                }
+            }
+        }
+    }
+
     public void Attacked() {
         _canAttack = false;
         StartCoroutine(ResetAttack());
@@ -69,13 +94,28 @@ public class PlayerManager : MonoBehaviourSingleton<PlayerManager> {
         _canAttack = true;
     }
 
+    public void Heal(int value) {
+        _health += value;
+        OnHealthChanged?.Invoke();
+    }
+
     public void TakeDamage(int damage) {
-        if (damage < _health) {
-            _health -= damage;
+        int finaleDamage;
+
+        if (isBlocking) {
+            finaleDamage = (int)(damage * _BlockingMultipliar);
+        } else {
+            finaleDamage = damage;
+        }
+
+        if (finaleDamage < _health) {
+            _health -= finaleDamage;
         } else {
             _health = 0;
         }
+
         OnHealthChanged?.Invoke();
+
         if (_health == 0) {
             Die();
         }

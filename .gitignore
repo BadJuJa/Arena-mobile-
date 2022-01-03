@@ -2,7 +2,7 @@
 [Tt]emp/
 [Oo]bj/
 [Bb]uild/
-#[Bb]uilds/
+[Bb]uilds/
 [Ll]ogs/
 Assets/AssetStoreTools*
 
@@ -34,7 +34,7 @@ ExportedObj/
 sysinfo.txt
 
 # Builds
-#*.apk
+*.apk
 *.unitypackage
 
 # Logs

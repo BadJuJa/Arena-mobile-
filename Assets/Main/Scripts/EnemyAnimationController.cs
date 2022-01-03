@@ -21,8 +21,8 @@ public class EnemyAnimationController : MonoBehaviour {
         _animator.SetTrigger(triggerName);
     }
 
-    public void SetStun(int _) {
-        _enemyController.SetStun(_ == 1);
+    public void RemoveStun() {
+        _enemyController.SetStun(false);
     }
 
     public void SetPossibilityToBeParried(int _) {

@@ -4,13 +4,6 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviourSingleton<EnemyController> {
 
-    public enum AttackDirection {
-        Up,
-        Left,
-        Right,
-        Down
-    }
-
     #region Events
 
     public delegate void AnimationTriggered(string triggerName);
@@ -36,14 +29,13 @@ public class EnemyController : MonoBehaviourSingleton<EnemyController> {
     public List<EnemyData> EnemyDataList;
     public float RespawnTime;
 
-    private SwipeDetection _swipeDetection;
     private PlayerManager _playerManager;
 
     private bool _canBeParried;
     private bool _stunned;
     private bool _canAttack;
 
-    private AttackDirection _attackDirection;
+    private StructsAndEnums.Direction _attackDirection;
 
     private float _maxHealth;
     private float _attackSpeed;
@@ -60,9 +52,8 @@ public class EnemyController : MonoBehaviourSingleton<EnemyController> {
     #region Unity Methods
 
     private void Awake() {
-        _swipeDetection = SwipeDetection.Instance;
         _playerManager = PlayerManager.Instance;
-        _swipeDetection.OnSwipeDone += HandlePlayerActions;
+        SwipeDetector.OnSwipe += HandlePlayerActions;
     }
 
     private void Start() {
@@ -89,11 +80,19 @@ public class EnemyController : MonoBehaviourSingleton<EnemyController> {
 
     #endregion Unity Methods
 
-    private void HandlePlayerActions(SwipeDetection.SwipeDirection swipeDirection) {
+    private void HandlePlayerActions(StructsAndEnums.Direction swipeDirection) {
+        if (swipeDirection == StructsAndEnums.Direction.Down) {
+            if (!_playerManager.isBlocking) {
+                _playerManager.isBlocking = true;
+            }
+            return;
+        } else {
+            _playerManager.isBlocking = false;
+        }
         if (!_playerManager.CanAttack || !_isSpawned)
             return;
 
-        if (_canBeParried && swipeDirection.ToString() == _attackDirection.ToString()) {
+        if (_canBeParried && swipeDirection == _attackDirection) {
             _stunned = true;
             OnAnimationTriggered?.Invoke("GetStunned");
             _canBeParried = false;
@@ -120,7 +119,7 @@ public class EnemyController : MonoBehaviourSingleton<EnemyController> {
     private void Attack() {
         _canAttack = false;
 
-        _attackDirection = (AttackDirection)Random.Range(0, 3);
+        _attackDirection = (StructsAndEnums.Direction)Random.Range(0, 3);
         OnAnimationTriggered?.Invoke("Attack" + _attackDirection.ToString());
     }
 

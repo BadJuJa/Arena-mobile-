@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b58a5fa9121b6d41a09c24a15b50f0c, type: 3}
+  m_Name: NewEnemy1
+  m_EditorClassIdentifier: 
+  Name: "\u0429\u0435\u0440\u0431\u0430"
+  Prefab: {fileID: 1719253852161760192, guid: 417e01f4b0ff9034d8e3e3eea718fc43, type: 3}
+  CostOfCoins: 30
+  Health: 50
+  Damage: 10
+  AttackSpeed: 90

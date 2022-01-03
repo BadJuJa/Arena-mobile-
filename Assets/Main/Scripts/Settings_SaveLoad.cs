@@ -2,6 +2,7 @@ using UnityEngine;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
+[DefaultExecutionOrder(-2)]
 public class Settings_SaveLoad : MonoBehaviour {
 
     public static void Save(ActiveSetings settings) {

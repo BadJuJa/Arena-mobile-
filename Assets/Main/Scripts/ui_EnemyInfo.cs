@@ -47,9 +47,13 @@ public class ui_EnemyInfo : MonoBehaviour {
     }
 
     private IEnumerator SmoothHealthChanging(float delta) {
-        for (int i = 0; i < Smoothness; i++) {
-            Healthbar.value -= delta / Smoothness;
-            yield return new WaitForSeconds(1 / Smoothness);
+        if (Smoothness == 1) {
+            Healthbar.value -= delta;
+        } else {
+            for (int i = 0; i < Smoothness; i++) {
+                Healthbar.value -= delta / Smoothness;
+                yield return new WaitForSeconds(1 / Smoothness);
+            }
         }
     }
 }
